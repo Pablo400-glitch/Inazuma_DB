@@ -183,3 +183,44 @@ VALUES
     ('Jim', 'Lawrenson', 'masculino', 'japones', 'aire', 'delantero', (SELECT id_equipo FROM EQUIPO WHERE nombre = 'Royal Academy'), 54, 57, 63, 57, 55, 53, 56),
     ('David', 'Samford', 'masculino', 'japones', 'bosque', 'delantero', (SELECT id_equipo FROM EQUIPO WHERE nombre = 'Royal Academy'), 70, 60, 66, 78, 71, 66, 67),
     ('Daniel', 'Hatch', 'masculino', 'japones', 'bosque', 'delantero', (SELECT id_equipo FROM EQUIPO WHERE nombre = 'Royal Academy'), 75, 69, 68, 68, 64, 78, 61);
+
+INSERT INTO PORTERO (id_jugador, paradas)
+VALUES 
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Mark' AND apellidos = 'Evans'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Joe' AND apellidos = 'King'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Bob' AND apellidos = 'Carlton'), 0);
+
+INSERT INTO DEFENSA (id_jugador, balones_robados)
+VALUES 
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Jack' AND apellidos = 'Wallside'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Jim' AND apellidos = 'Wraith'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Bobby' AND apellidos = 'Shearer'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Tod' AND apellidos = 'Ironside'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Nathan' AND apellidos = 'Swift'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Peter' AND apellidos = 'Drent'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Ben' AND apellidos = 'Simmons'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Gus' AND apellidos = 'Martin'), 0);
+
+INSERT INTO CENTROCAMPISTA (id_jugador, regates_realizados)
+VALUES 
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Steve' AND apellidos = 'Grim'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Tim' AND apellidos = 'Saunders'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Sam' AND apellidos = 'Kincaid'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Jude' AND apellidos = 'Sharp'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Alan' AND apellidos = 'Master'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'John' AND apellidos = 'Bloom'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Derek' AND apellidos = 'Swing'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Herman' AND apellidos = 'Waldon'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Barry' AND apellidos = 'Potts'), 0);
+
+INSERT INTO DELANTERO (id_jugador, disparos_a_puerta)
+VALUES 
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Maxwell' AND apellidos = 'Carson'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Kevin' AND apellidos = 'Dragonfly'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Axel' AND apellidos = 'Blaze'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'William' AND apellidos = 'Glass'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Cliff' AND apellidos = 'Tomlinson'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Steve' AND apellidos = 'Ingham'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Jim' AND apellidos = 'Lawrenson'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'David' AND apellidos = 'Samford'), 0),
+    ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Daniel' AND apellidos = 'Hatch'), 0);
