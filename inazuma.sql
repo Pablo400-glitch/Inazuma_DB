@@ -7,6 +7,7 @@ CREATE TYPE GENERO AS ENUM ('masculino', 'femenino', 'desconocido');
 
 CREATE TABLE ESTADIO(
   id_estadio SERIAL NOT NULL, 
+  nombre VARCHAR(50) NOT NULL,
   cesped CESPED NOT NULL, 
   tipo TIPO_ESTADIO NOT NULL,
   PRIMARY KEY(id_estadio)
@@ -107,6 +108,7 @@ ALTER TABLE DELANTERO ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFEREN
 ALTER TABLE DEFENSA ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFERENCES JUGADOR(id_jugador) ON DELETE CASCADE;
 ALTER TABLE CENTROCAMPISTA ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFERENCES JUGADOR(id_jugador) ON DELETE CASCADE;
 
+-- Equipos
 INSERT INTO EQUIPO (nombre, pais, victorias, goles_a_favor, goles_en_contra)
 VALUES ('Raimon', 'Japón', 0, 0, 0);
 
@@ -149,6 +151,7 @@ VALUES ('Inazuma Kids FC', 'Japón', 0, 0, 0);
 INSERT INTO EQUIPO (nombre, pais, victorias, goles_a_favor, goles_en_contra)
 VALUES ('Umbrella', 'Japón', 0, 0, 0);
 
+-- Jugadores
 INSERT INTO JUGADOR (nombre, apellidos, genero, nacionalidad, elemento, posicion, id_equipo, tiro, regate, defensa, control, tecnica, rapidez, aguante)
 VALUES 
     ('Mark', 'Evans', 'masculino', 'japones', 'montaña', 'portero', (SELECT id_equipo FROM EQUIPO WHERE nombre = 'Raimon'), 72, 72, 77, 70, 79, 68, 69),
@@ -184,6 +187,7 @@ VALUES
     ('David', 'Samford', 'masculino', 'japones', 'bosque', 'delantero', (SELECT id_equipo FROM EQUIPO WHERE nombre = 'Royal Academy'), 70, 60, 66, 78, 71, 66, 67),
     ('Daniel', 'Hatch', 'masculino', 'japones', 'bosque', 'delantero', (SELECT id_equipo FROM EQUIPO WHERE nombre = 'Royal Academy'), 75, 69, 68, 68, 64, 78, 61);
 
+-- Posiciones
 INSERT INTO PORTERO (id_jugador, paradas)
 VALUES 
     ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Mark' AND apellidos = 'Evans'), 0),
@@ -224,3 +228,15 @@ VALUES
     ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Jim' AND apellidos = 'Lawrenson'), 0),
     ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'David' AND apellidos = 'Samford'), 0),
     ((SELECT id_jugador FROM JUGADOR WHERE nombre = 'Daniel' AND apellidos = 'Hatch'), 0);
+
+
+INSERT INTO ESTADIO (nombre, cesped, tipo) 
+VALUES
+    ('Estadio Fútbol Frontier', 'natural', 'exterior'),
+    ('Ribera del Río', 'natural', 'exterior'),
+    ('Campo del Instituto Raimon', 'natural', 'exterior'),
+    ('Campo del Instituto Wild', 'artificial', 'exterior'),
+    ('Campo del Instituto Brain', 'sin cesped', 'exterior'),
+    ('Campo del Instituto Otaku', 'natural', 'exterior'),
+    ('Royal Academy', 'sin cesped', 'exterior'),
+    ('Estadio Zeus', 'natural', 'cubierto');
