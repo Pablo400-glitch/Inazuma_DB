@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Teams {% endblock %}</h1>
     {% for team in teams %}
         <div class='player'>
             <h2>{{ team[0] }}</h2>

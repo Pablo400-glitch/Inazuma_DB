@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Stadium {% endblock %}</h1>
     {% for stadium in stadiums %}
         <div class='player'>
             <h2>{{ stadium[1] }}</h2>

@@ -6,14 +6,14 @@
     <style>
         nav a {
             color: #d64161;
-            font-size: 3em;
+            font-size: 24px;
             margin-left: 50px;
             text-decoration: none;
         }
 
         .player {
-            padding: 20px;
-            margin: 10px;
+            padding: 5px;
+            margin: 5px;
             background-color: #f7f4f4;
         }
     </style>
@@ -21,10 +21,10 @@
 <body>
     <nav>
         <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('Players') }}">Players</a>
-        <a href="{{ url_for('Teams') }}">Teams</a>
-        <a href="{{ url_for('Stadiums') }}">Stadium</a>
-        <a href="{{ url_for('Special_Moves') }}">Special Moves</a>
+        <a href="{{ url_for('Players') }}">Jugadores</a>
+        <a href="{{ url_for('Teams') }}">Equipos</a>
+        <a href="{{ url_for('Stadiums') }}">Estadios</a>
+        <a href="{{ url_for('Special_Moves') }}">Supertécnicas</a>
         <a href="#">About</a>
     </nav>
     <hr>
