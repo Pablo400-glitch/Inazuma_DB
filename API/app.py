@@ -54,3 +54,13 @@ def Stadiums():
     cur.close()
     conn.close()
     return render_template('stadium.html', stadiums=stadiums)
+
+@app.route('/Special_Moves/')
+def Special_Moves():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM supertecnica;')
+    special_moves = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('special_moves.html', special_moves=special_moves)

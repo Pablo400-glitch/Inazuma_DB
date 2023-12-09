@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Players {% endblock %}</h1>
+    {% for special_move in special_moves %}
+        <div class='player'>
+            <h2>{{ special_move[1] }}</h2>
+            <p>Elemento: {{ special_move[2] }}</p>
+            <p>Tipo: {{ special_move[3] }}</p>
+            <p>Número de Jugadores con supertecnica: {{ special_move[4] }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}
