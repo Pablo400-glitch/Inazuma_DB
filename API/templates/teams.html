@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Teams {% endblock %}</h1>
+    {% for team in teams %}
+        <div class='player'>
+            <h2>{{ team[0] }}</h2>
+            <p>Pais: {{ team[1] }}</p>
+            <p>Victorias: {{ team[2] }}</p>
+            <p>Goles a favor: {{ team[3] }}</p>
+            <p>Goles en contra: {{ team[4] }}</p>
+            <p>Jugadores: {{ team[5] }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

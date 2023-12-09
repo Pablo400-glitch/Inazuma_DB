@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Stadium {% endblock %}</h1>
+    {% for stadium in stadiums %}
+        <div class='player'>
+            <h2>{{ stadium[1] }}</h2>
+            <p>Tipo de Cesped: {{ stadium[2] }}</p>
+            <p>Tipo de Estadio: {{ stadium[3] }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}
