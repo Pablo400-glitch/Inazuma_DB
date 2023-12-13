@@ -44,7 +44,7 @@ CREATE TABLE ENTRENAMIENTO(
 
 CREATE TABLE SUPERTECNICA(
   id_supertecnica SERIAL NOT NULL,
-  nombre VARCHAR(20) NOT NULL,
+  nombre VARCHAR(30) NOT NULL,
   elemento ELEMENTO NOT NULL,
   tipo TIPO_SUPERTECNICA NOT NULL,
   cantidad_jugadores_con_supertecnica INTEGER NOT NULL,
@@ -369,7 +369,7 @@ VALUES
   (173, 'Chad', 'Bullford', 'Masculino', 'Japones', 'Fuego', 'Portero', 4, 41, 68, 48, 77, 31, 51),
   (174, 'Charlie', 'Boardfield', 'Masculino', 'Japones', 'Fuego', 'Portero', 4, 68, 44, 44, 69, 60, 62),
   (175, 'Harry', 'Snake', 'Masculino', 'Japones', 'Bosque', 'delantero', 4, 55, 63, 62, 49, 55, 65),
-  (176, 'Leonard', "O'Shea", 'Masculino', 'Japones', 'Montaña', 'Defensa', 4, 78, 52, 47, 64, 55, 69);
+  (176, 'Leonard', 'O`Shea', 'Masculino', 'Japones', 'Montaña', 'Defensa', 4, 78, 52, 47, 64, 55, 69);
 
 -- Jugadores para el equipo "Zeus"
 INSERT INTO JUGADOR (id_jugador, nombre, apellidos, genero, nacionalidad, elemento, posicion, id_equipo, tiro, regate, defensa, control, rapidez, aguante)
@@ -721,7 +721,7 @@ VALUES
     (50, 'Regate Topo', 'Montaña', 'Regate', 0),
     (51, 'Superbalón Rodante', 'Bosque', 'Tiro', 0),
     (52, 'Tiro Cegador', 'Fuego', 'Tiro', 0),
-    (53, 'Despeje de Leñador', 'monataña', 'Atajo', 0),
+    (53, 'Despeje de Leñador', 'Montaña', 'Atajo', 0),
     (54, 'Trama Trama', 'Montaña', 'Bloqueo', 0),
     (55, 'Muralla Infinita', 'Montaña', 'Atajo', 0),
     (56, 'Ruptura Relámpago', 'Aire', 'Tiro', 0),
@@ -883,3 +883,29 @@ VALUES
     ('Campo del Instituto Otaku', 'Natural', 'Exterior'),
     ('Royal Academy', 'Sin cesped', 'Exterior'),
     ('Estadio Zeus', 'Natural', 'Cubierto');
+
+
+INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
+VALUES
+(1, 1, 2, 3, 1, 20, '2008-10-12'),
+(2, 1, 3, 3, 4, 3, '2008-10-19'),
+(3, 4, 1, 4, 0, 1, '2008-10-26'),
+(4, 5, 1, 5, 1, 2, '2008-11-23'),
+(5, 6, 1, 6, 1, 2, '2008-11-30'),
+(6, 2, 1, 7, 1, 2, '2008-12-21'),
+(7, 1, 11, 2, 3, 3, '2009-01-04'),
+(8, 1, 7, 1, 2, 1, '2009-01-18'),
+(9, 1, 8, 1, 2, 1, '2009-02-01'),
+(10, 1, 9, 1, 3, 2, '2009-02-15'),
+(11, 1, 10, 1, 4, 3, '2009-03-08');
+
+INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
+VALUES
+('2008-10-05', 1, 'Instituto Raimon', 'Vuelta al campo'),
+('2008-10-06', 1, 'Instituto Raimon', 'Tiro a puerta'),
+('2008-10-07', 1, 'Ribera del río', 'Control de balon'),
+('2008-10-08', 2, 'Instituto Royal', 'Control de balon'),
+('2008-10-08', 3, 'Instituto Occult', 'Tiro a puerta'),
+('2008-10-08', 4, 'Instituto Wild', 'Control de balon'),
+('2008-10-09', 5, 'Instituto Brain', 'Vuelta al campo'),
+('2008-10-09', 6, 'Instituto Otaku', 'Tiro a puerta');
