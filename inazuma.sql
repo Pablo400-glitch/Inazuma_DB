@@ -4,6 +4,7 @@ CREATE TYPE ELEMENTO AS ENUM('Bosque', 'Montaña', 'Aire', 'Fuego');
 CREATE TYPE TIPO_ENTRENAMIENTO AS ENUM('Tiro a puerta', 'Vuelta al campo', 'Control de balon');
 CREATE TYPE TIPO_SUPERTECNICA AS ENUM('Atajo', 'Tiro', 'Regate', 'Bloqueo');
 CREATE TYPE GENERO AS ENUM ('Masculino', 'Femenino', 'desconocido');
+CREATE TYPE POSICION AS ENUM('Portero', 'Defensa', 'Centrocampista', 'Delantero');
 
 CREATE TABLE ESTADIO(
   id_estadio SERIAL NOT NULL, 
@@ -28,9 +29,9 @@ CREATE TABLE EQUIPO(
   id_equipo SERIAL NOT NULL,
   nombre VARCHAR(20) NOT NULL,
   pais VARCHAR(20) NOT NULL,
-  victorias INTEGER NOT NULL,
-  goles_a_favor INTEGER NOT NULL,
-  goles_en_contra INTEGER NOT NULL,
+  victorias INTEGER,
+  goles_a_favor INTEGER,
+  goles_en_contra INTEGER,
   PRIMARY key(id_equipo)
 );
 
@@ -47,7 +48,7 @@ CREATE TABLE SUPERTECNICA(
   nombre VARCHAR(30) NOT NULL,
   elemento ELEMENTO NOT NULL,
   tipo TIPO_SUPERTECNICA NOT NULL,
-  cantidad_jugadores_con_supertecnica INTEGER NOT NULL,
+  cantidad_jugadores_con_supertecnica INTEGER,
   PRIMARY KEY(id_supertecnica)
 );
 
@@ -58,10 +59,10 @@ CREATE TABLE JUGADOR(
   genero GENERO NOT NULL,
   nacionalidad VARCHAR(20) NOT NULL,
   elemento ELEMENTO NOT NULL,
-  posicion VARCHAR(20) NOT NULL,
+  posicion POSICION NOT NULL,
   id_equipo INTEGER NOT NULL,
   tiro INTEGER NOT NULL,
-  Regate INTEGER NOT NULL,
+  regate INTEGER NOT NULL,
   defensa INTEGER NOT NULL,
   control INTEGER NOT NULL,
   rapidez INTEGER NOT NULL,
@@ -92,7 +93,7 @@ CREATE TABLE DEFENSA(
 
 CREATE TABLE CENTROCAMPISTA(
   id_jugador INTEGER NOT NULL,
-  Regates_realizados INTEGER NOT NULL
+  regates_realizados INTEGER NOT NULL
 );
 
 ALTER TABLE PARTIDO ADD CONSTRAINT fk_equipo_local FOREIGN KEY (id_equipo_local) REFERENCES EQUIPO(id_equipo) ON DELETE CASCADE;
@@ -106,6 +107,26 @@ ALTER TABLE PORTERO ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFERENCE
 ALTER TABLE DELANTERO ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFERENCES JUGADOR(id_jugador) ON DELETE CASCADE;
 ALTER TABLE DEFENSA ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFERENCES JUGADOR(id_jugador) ON DELETE CASCADE;
 ALTER TABLE CENTROCAMPISTA ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) REFERENCES JUGADOR(id_jugador) ON DELETE CASCADE;
+
+ALTER TABLE PARTIDO ADD CONSTRAINT not_equal_teams CHECK (id_equipo_local <> id_equipo_visitante);
+ALTER TABLE JUGADOR ADD CONSTRAINT positive_stats CHECK (tiro > 0 AND regate > 0 AND defensa > 0 AND control > 0 AND rapidez > 0 AND aguante > 0);
+ALTER TABLE PARTIDO ADD CONSTRAINT positive_goals CHECK (goles_local >= 0 AND goles_visitante >= 0);
+ALTER TABLE EQUIPO ADD CONSTRAINT positive_wins CHECK (victorias >= 0);
+ALTER TABLE EQUIPO ADD CONSTRAINT positive_goals CHECK (goles_a_favor >= 0 AND goles_en_contra >= 0);
+ALTER TABLE PORTERO ADD CONSTRAINT positive_saves CHECK (paradas >= 0);
+ALTER TABLE DELANTERO ADD CONSTRAINT positive_shots CHECK (disparos_a_puerta >= 0);
+ALTER TABLE DEFENSA ADD CONSTRAINT positive_stolen_balls CHECK (balones_robados >= 0);
+ALTER TABLE CENTROCAMPISTA ADD CONSTRAINT positive_dribbles CHECK (regates_realizados >= 0);
+
+-- Disparador que sume victorias a un equipo cuando gana un partido
+CREATE OR REPLACE FUNCTION sumar_victoria() RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE EQUIPO SET victorias = victorias + 1 WHERE id_equipo = NEW.id_equipo_local;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER sumar_victoria AFTER INSERT ON PARTIDO EXECUTE PROCEDURE sumar_victoria();
 
 -- Equipos
 INSERT INTO EQUIPO (id_equipo, nombre, pais, victorias, goles_a_favor, goles_en_contra)
