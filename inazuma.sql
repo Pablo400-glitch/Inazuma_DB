@@ -287,12 +287,12 @@ BEGIN
     SELECT 1
     FROM PARTIDO
     WHERE NEW.id_equipo = id_equipo_local
-      AND ((NEW.fecha >= fecha AND NEW.fecha + INTERVAL '2 hours' <= fecha) OR (NEW.fecha <= fecha AND NEW.fecha - INTERVAL '2 hours' >= fecha))
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) OR EXISTS (
     SELECT 1
     FROM PARTIDO
     WHERE NEW.id_equipo = id_equipo_visitante
-      AND ((NEW.fecha >= fecha AND NEW.fecha + INTERVAL '2 hours' <= fecha) OR (NEW.fecha <= fecha AND NEW.fecha - INTERVAL '2 hours' >= fecha))
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) THEN
     RAISE EXCEPTION 'No se puede programar un entrenamiento dentro de las 2 horas anteriores o posteriores a un entrenamiento.';
   END IF;
