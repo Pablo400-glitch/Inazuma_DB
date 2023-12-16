@@ -255,7 +255,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER restar_jugadores_con_supertecnica BEFORE DELETE ON SUPERTECNICA_JUGADOR FOR EACH ROW EXECUTE PROCEDURE restar_jugadores_con_supertecnica();
 
--- Disparador que valida la hora de inicio en un partido
+-- Disparador que valida la hora de inicio en un partido de un equipo
 CREATE OR REPLACE FUNCTION validar_horario_partido()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -279,7 +279,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validar_horario_partido_trigger BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_horario_partido();
 
--- Disparador que valida la hora de inicio en un entrenamiento
+-- Disparador que valida la hora de inicio en un entrenamiento de un equipo
 CREATE OR REPLACE FUNCTION validar_horario_entrenamiento()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -302,6 +302,62 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validar_horario_entrenamiento_trigger BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_horario_entrenamiento();
+
+-- Disparador que valida la hora de inicio entre partidos del mismo equipo
+CREATE OR REPLACE FUNCTION validar_partidos_mismo_equipo()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE id_equipo_local = NEW.id_equipo_local
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) OR EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE id_equipo_local = NEW.id_equipo_visitante
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) or EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE id_equipo_visitante = NEW.id_equipo_local
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) OR EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE id_equipo_visitante = NEW.id_equipo_visitante
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar un partido dentro de las 2 horas anteriores o posteriores a otro partido del mismo equipo.';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validar_partidos_mismo_equipo_trigger BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_partidos_mismo_equipo();
+
+-- Disparador que valida la hora de inicio en un entrenamiento
+CREATE OR REPLACE FUNCTION validar_entrenamientos_mismo_equipo()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM ENTRENAMIENTO
+    WHERE NEW.id_equipo = id_equipo
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar un entrenamiento dentro de las 2 horas anteriores o posteriores a un entrenamiento del mismo equipo.';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validar_entrenamientos_mismo_equipo_trigger BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
+
+
+
 
 
 -- Equipos
