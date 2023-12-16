@@ -294,7 +294,7 @@ BEGIN
     WHERE NEW.id_equipo = id_equipo_visitante
       AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) THEN
-    RAISE EXCEPTION 'No se puede programar un entrenamiento dentro de las 2 horas anteriores o posteriores a un entrenamiento.';
+    RAISE EXCEPTION 'No se puede programar un entrenamiento dentro de las 2 horas anteriores o posteriores a un partido.';
   END IF;
   
   RETURN NEW;
@@ -1105,7 +1105,7 @@ VALUES
 ('2008-10-08 17:00:00', 3, 'Instituto Occult', 'Tiro a puerta'),
 ('2008-10-08 17:00:00', 4, 'Instituto Wild', 'Control de balon'),
 ('2008-10-09 17:00:00', 5, 'Instituto Brain', 'Vuelta al campo'),
-('2008-10-09 17:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
+('2008-10-12 11:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
 
 -- Debería fallar
 INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
