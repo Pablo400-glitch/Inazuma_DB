@@ -6,6 +6,8 @@ CREATE TYPE TIPO_SUPERTECNICA AS ENUM('Atajo', 'Tiro', 'Regate', 'Bloqueo');
 CREATE TYPE GENERO AS ENUM ('Masculino', 'Femenino', 'desconocido');
 CREATE TYPE POSICION AS ENUM('Portero', 'Defensa', 'Centrocampista', 'Delantero');
 
+
+
 CREATE TABLE ESTADIO(
   id_estadio SERIAL NOT NULL, 
   nombre VARCHAR(50) NOT NULL,
@@ -96,6 +98,9 @@ CREATE TABLE CENTROCAMPISTA(
   regates_realizados INTEGER NOT NULL
 );
 
+
+
+
 ALTER TABLE PARTIDO ADD CONSTRAINT fk_equipo_local FOREIGN KEY (id_equipo_local) REFERENCES EQUIPO(id_equipo) ON DELETE CASCADE;
 ALTER TABLE PARTIDO ADD CONSTRAINT fk_equipo_visitante FOREIGN KEY (id_equipo_visitante) REFERENCES EQUIPO(id_equipo) ON DELETE CASCADE;
 ALTER TABLE PARTIDO ADD CONSTRAINT fk_estadio FOREIGN KEY (id_estadio) REFERENCES ESTADIO(id_estadio) ON DELETE CASCADE;
@@ -117,6 +122,10 @@ ALTER TABLE PORTERO ADD CONSTRAINT positive_saves CHECK (paradas >= 0);
 ALTER TABLE DELANTERO ADD CONSTRAINT positive_shots CHECK (disparos_a_puerta >= 0);
 ALTER TABLE DEFENSA ADD CONSTRAINT positive_stolen_balls CHECK (balones_robados >= 0);
 ALTER TABLE CENTROCAMPISTA ADD CONSTRAINT positive_dribbles CHECK (regates_realizados >= 0);
+
+
+
+
 
 -- Disparador que sume victorias a un equipo cuando gana un partido
 CREATE OR REPLACE FUNCTION sumar_victorias() RETURNS TRIGGER AS $$
@@ -245,6 +254,55 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER restar_jugadores_con_supertecnica BEFORE DELETE ON SUPERTECNICA_JUGADOR FOR EACH ROW EXECUTE PROCEDURE restar_jugadores_con_supertecnica();
+
+-- Disparador que valida la hora de inicio en un partido
+CREATE OR REPLACE FUNCTION validar_horario_partido()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM ENTRENAMIENTO
+    WHERE id_equipo = NEW.id_equipo_local
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) OR EXISTS (
+    SELECT 1
+    FROM ENTRENAMIENTO
+    WHERE id_equipo = NEW.id_equipo_visitante
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar un partido dentro de las 2 horas anteriores o posteriores a un entrenamiento.';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validar_horario_partido_trigger BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_horario_partido();
+
+-- Disparador que valida la hora de inicio en un entrenamiento
+CREATE OR REPLACE FUNCTION validar_horario_entrenamiento()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE NEW.id_equipo = id_equipo_local
+      AND ((NEW.fecha >= fecha AND NEW.fecha + INTERVAL '2 hours' <= fecha) OR (NEW.fecha <= fecha AND NEW.fecha - INTERVAL '2 hours' >= fecha))
+  ) OR EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE NEW.id_equipo = id_equipo_visitante
+      AND ((NEW.fecha >= fecha AND NEW.fecha + INTERVAL '2 hours' <= fecha) OR (NEW.fecha <= fecha AND NEW.fecha - INTERVAL '2 hours' >= fecha))
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar un entrenamiento dentro de las 2 horas anteriores o posteriores a un entrenamiento.';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validar_horario_entrenamiento_trigger BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_horario_entrenamiento();
+
 
 -- Equipos
 INSERT INTO EQUIPO (id_equipo, nombre, pais, victorias, goles_a_favor, goles_en_contra)
@@ -1026,25 +1084,32 @@ VALUES
 
 INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
 VALUES
-(1, 1, 2, 3, 1, 20, '2008-10-12'),
-(2, 1, 3, 3, 4, 3, '2008-10-19'),
-(3, 4, 1, 4, 0, 1, '2008-10-26'),
-(4, 5, 1, 5, 1, 2, '2008-11-23'),
-(5, 6, 1, 6, 1, 2, '2008-11-30'),
-(6, 2, 1, 7, 1, 2, '2008-12-21'),
-(7, 1, 11, 2, 3, 3, '2009-01-04'),
-(8, 1, 7, 1, 2, 1, '2009-01-18'),
-(9, 1, 8, 1, 2, 1, '2009-02-01'),
-(10, 1, 9, 1, 3, 2, '2009-02-15'),
-(11, 1, 10, 1, 4, 3, '2009-03-08');
+(1, 1, 2, 3, 1, 20, '2008-10-12 10:00:00'),
+(2, 1, 3, 3, 4, 3, '2008-10-19 09:30:00'),
+(3, 4, 1, 4, 0, 1, '2008-10-26 09:30:00'),
+(4, 5, 1, 5, 1, 2, '2008-11-23 10:00:00'),
+(5, 6, 1, 6, 1, 2, '2008-11-30 10:00:00'),
+(6, 2, 1, 7, 1, 2, '2008-12-21 10:00:00'),
+(7, 1, 11, 2, 3, 3, '2009-01-04 10:00:00'),
+(8, 1, 7, 1, 2, 1, '2009-01-18 10:00:00'),
+(9, 1, 8, 1, 2, 1, '2009-02-01 10:00:00'),
+(10, 1, 9, 1, 3, 2, '2009-02-15 10:00:00'),
+(11, 1, 10, 1, 4, 3, '2009-03-08 10:00:00');
 
 INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
 VALUES
-('2008-10-05', 1, 'Instituto Raimon', 'Vuelta al campo'),
-('2008-10-06', 1, 'Instituto Raimon', 'Tiro a puerta'),
-('2008-10-07', 1, 'Ribera del río', 'Control de balon'),
-('2008-10-08', 2, 'Instituto Royal', 'Control de balon'),
-('2008-10-08', 3, 'Instituto Occult', 'Tiro a puerta'),
-('2008-10-08', 4, 'Instituto Wild', 'Control de balon'),
-('2008-10-09', 5, 'Instituto Brain', 'Vuelta al campo'),
-('2008-10-09', 6, 'Instituto Otaku', 'Tiro a puerta');
+('2008-10-05 17:00:00', 1, 'Instituto Raimon', 'Vuelta al campo'),
+('2008-10-06 17:00:00', 1, 'Instituto Raimon', 'Tiro a puerta'),
+('2008-10-07 17:00:00', 1, 'Ribera del río', 'Control de balon'),
+('2008-10-08 17:00:00', 2, 'Instituto Royal', 'Control de balon'),
+('2008-10-08 17:00:00', 3, 'Instituto Occult', 'Tiro a puerta'),
+('2008-10-08 17:00:00', 4, 'Instituto Wild', 'Control de balon'),
+('2008-10-09 17:00:00', 5, 'Instituto Brain', 'Vuelta al campo'),
+('2008-10-09 17:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
+
+-- Debería fallar
+INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
+VALUES('2008-10-12 11:00:00', 1, 'Instituto Raimon', 'Vuelta al campo');
+
+INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
+VALUES(12, 1, 2, 3, 1, 20, '2008-10-05 16:00:00');
