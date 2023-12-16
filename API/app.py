@@ -1,6 +1,6 @@
 ﻿import os
 import psycopg2
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
@@ -73,6 +73,44 @@ def delete_player(id_player):
     except Exception as e:
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404
+    
+@app.route('/add_player/', methods=['POST'])
+def add_player():
+    try:
+        # Obtiene los datos del jugador del cuerpo de la petición
+        player_data = request.get_json()
+
+        # Valida que los datos del jugador no estén vacíos
+        if not player_data:
+            raise Exception('No se proporcionaron datos para el jugador')
+        
+        for field in player_data:
+            if not player_data.get(field):
+                raise Exception(f'El campo {field} no puede estar vacío')
+            print(field)
+
+        # Obtiene una conexión a la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Inserta el jugador en la base de
+        cur.execute('INSERT INTO jugador (id_jugador, nombre, apellidos, genero, nacionalidad, elemento, posicion, id_equipo, tiro, regate, defensa, control, rapidez, aguante) '
+                    'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s ,%s, %s, %s, %s);', 
+                    (player_data.get('id_jugador'), player_data.get('nombre'), player_data.get('apellidos'), player_data.get('genero'), 
+                     player_data.get('nacionalidad'), player_data.get('elemento'), player_data.get('posicion'), player_data.get('id_equipo'), 
+                     player_data.get('tiro'), player_data.get('regate'), player_data.get('defensa'), player_data.get('control'), 
+                     player_data.get('rapidez'), player_data.get('aguante')))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Player added successfully'})
+
+    except Exception as e:
+        # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
+        return jsonify({'error': str(e)}), 400
+                    
 
 @app.route('/teams/')
 def Teams():

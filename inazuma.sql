@@ -21,8 +21,8 @@ create table PARTIDO(
   id_equipo_local INTEGER not NULL,
   id_equipo_visitante INTEGER NOT NULL,
   id_estadio INTEGER NOT NULL,
-  goles_local INTEGER,
-  goles_visitante INTEGER,
+  goles_local INTEGER DEFAULT 0 NOT NULL,
+  goles_visitante INTEGER DEFAULT 0 NOT NULL,
   fecha TIMESTAMP NOT NULL,
   primary key(id_partido)
 );
@@ -31,9 +31,9 @@ CREATE TABLE EQUIPO(
   id_equipo SERIAL NOT NULL,
   nombre VARCHAR(20) NOT NULL,
   pais VARCHAR(20) NOT NULL,
-  victorias INTEGER,
-  goles_a_favor INTEGER,
-  goles_en_contra INTEGER,
+  victorias INTEGER DEFAULT 0 NOT NULL,
+  goles_a_favor INTEGER DEFAULT 0 NOT NULL,
+  goles_en_contra INTEGER DEFAULT 0 NOT NULL,
   PRIMARY key(id_equipo)
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE SUPERTECNICA(
   nombre VARCHAR(30) NOT NULL,
   elemento ELEMENTO NOT NULL,
   tipo TIPO_SUPERTECNICA NOT NULL,
-  cantidad_jugadores_con_supertecnica INTEGER,
+  cantidad_jugadores_con_supertecnica INTEGER DEFAULT 0 NOT NULL,
   PRIMARY KEY(id_supertecnica)
 );
 
@@ -80,22 +80,22 @@ CREATE TABLE SUPERTECNICA_JUGADOR(
 
 CREATE TABLE PORTERO(
   id_jugador INTEGER NOT NULL,
-  paradas INTEGER NOT NULL
+  paradas INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE DELANTERO(
   id_jugador INTEGER NOT NULL,
-  disparos_a_puerta INTEGER NOT NULL
+  disparos_a_puerta INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE DEFENSA(
   id_jugador INTEGER NOT NULL,
-  balones_robados INTEGER NOT NULL
+  balones_robados INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE CENTROCAMPISTA(
   id_jugador INTEGER NOT NULL,
-  regates_realizados INTEGER NOT NULL
+  regates_realizados INTEGER DEFAULT 0 NOT NULL
 );
 
 
@@ -116,7 +116,7 @@ ALTER TABLE CENTROCAMPISTA ADD CONSTRAINT fk_jugador FOREIGN KEY (id_jugador) RE
 ALTER TABLE PARTIDO ADD CONSTRAINT not_equal_teams CHECK (id_equipo_local <> id_equipo_visitante);
 ALTER TABLE JUGADOR ADD CONSTRAINT positive_stats CHECK (tiro > 0 AND regate > 0 AND defensa > 0 AND control > 0 AND rapidez > 0 AND aguante > 0);
 ALTER TABLE PARTIDO ADD CONSTRAINT positive_goals CHECK (goles_local >= 0 AND goles_visitante >= 0);
-ALTER TABLE EQUIPO ADD CONSTRAINT positive_wins CHECK (victorias >= 0);
+ALTER TABLE EQUIPO ADD CONSTRAINT positive_wins_ties_loses CHECK (victorias >= 0);
 ALTER TABLE EQUIPO ADD CONSTRAINT positive_goals CHECK (goles_a_favor >= 0 AND goles_en_contra >= 0);
 ALTER TABLE PORTERO ADD CONSTRAINT positive_saves CHECK (paradas >= 0);
 ALTER TABLE DELANTERO ADD CONSTRAINT positive_shots CHECK (disparos_a_puerta >= 0);
@@ -356,8 +356,81 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validar_entrenamientos_mismo_equipo_trigger BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
 
+-- Disparador que valida que el jugador sea portero
+CREATE OR REPLACE FUNCTION es_portero()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM JUGADOR
+    WHERE NEW.id_jugador = id_jugador
+      AND posicion != 'Portero'
+  ) THEN
+    RAISE EXCEPTION 'No se puede añadir un jugador a la tabla que no sea portero';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER es_portero_trigger BEFORE INSERT ON PORTERO FOR EACH ROW EXECUTE FUNCTION es_portero();
 
+-- Disparador que valida que el jugador sea defensa
+CREATE OR REPLACE FUNCTION es_defensa()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM JUGADOR
+    WHERE NEW.id_jugador = id_jugador
+      AND posicion != 'Defensa'
+  ) THEN
+    RAISE EXCEPTION 'No se puede añadir un jugador a la tabla que no sea defensa';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER es_defensa_trigger BEFORE INSERT ON DEFENSA FOR EACH ROW EXECUTE FUNCTION es_defensa();
+
+-- Disparador que valida que el jugador sea centrocampista
+CREATE OR REPLACE FUNCTION es_centrocampista()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM JUGADOR
+    WHERE NEW.id_jugador = id_jugador
+      AND posicion != 'Centrocampista'
+  ) THEN
+    RAISE EXCEPTION 'No se puede añadir un jugador a la tabla que no sea centrocampista';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER es_centrocampista_trigger BEFORE INSERT ON CENTROCAMPISTA FOR EACH ROW EXECUTE FUNCTION es_centrocampista();
+
+-- Disparador que valida que el jugador sea delantero
+CREATE OR REPLACE FUNCTION es_delantero()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM JUGADOR
+    WHERE NEW.id_jugador = id_jugador
+      AND posicion != 'Delantero'
+  ) THEN
+    RAISE EXCEPTION 'No se puede añadir un jugador a la tabla que no sea delantero';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER es_delantero_trigger BEFORE INSERT ON DELANTERO FOR EACH ROW EXECUTE FUNCTION es_delantero();
 
 
 -- Equipos
@@ -1162,10 +1235,3 @@ VALUES
 ('2008-10-08 17:00:00', 4, 'Instituto Wild', 'Control de balon'),
 ('2008-10-09 17:00:00', 5, 'Instituto Brain', 'Vuelta al campo'),
 ('2008-10-12 11:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
-
--- Debería fallar
-INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
-VALUES('2008-10-12 11:00:00', 1, 'Instituto Raimon', 'Vuelta al campo');
-
-INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
-VALUES(12, 1, 2, 3, 1, 20, '2008-10-05 16:00:00');
