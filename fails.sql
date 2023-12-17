@@ -40,25 +40,14 @@ INSERT INTO JUGADOR(id_jugador, nombre, apellidos, genero, nacionalidad, element
 INSERT INTO PORTERO (id_jugador, paradas)
 VALUES (999, -1); --Valor negativo
 
-INSERT INTO PORTERO (id_jugador, paradas)
-VALUES (998, 0); --No es portero
-
 INSERT INTO DELANTERO (id_jugador, disparos_a_puerta)
 VALUES (998, -1); --Valor negativo
-
-INSERT INTO DELANTERO (id_jugador, disparos_a_puerta)
-VALUES (999, 0); --No es delantero
 
 INSERT INTO DEFENSA (id_jugador, balones_robados)
 VALUES (997, -1); --Valor negativo
 
-INSERT INTO DEFENSA (id_jugador, balones_robados)
-VALUES (996, 0); --No es defensa
-
 INSERT INTO CENTROCAMPISTA (id_jugador, regates_realizados)
 VALUES (996, -1); --Valor negativo
 
-INSERT INTO CENTROCAMPISTA (id_jugador, regates_realizados)
-VALUES (997, 0); --No es centrocampista
 
 DELETE FROM JUGADOR WHERE id_jugador = 999 OR id_jugador = 998 OR id_jugador = 997 OR id_jugador = 996;
