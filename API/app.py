@@ -51,7 +51,7 @@ def Players():
 
     return jsonify(players_json)
 
-@app.route('/delete_player/<int:id_player>', methods=['DELETE'])
+@app.route('/players/<int:id_player>', methods=['DELETE'])
 def delete_player(id_player):
     try:
         conn = get_db_connection()
@@ -75,7 +75,7 @@ def delete_player(id_player):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404
 
-@app.route('/add_player/', methods=['POST'])
+@app.route('/players/', methods=['POST'])
 def add_player():
     try:
         # Obtiene los datos del jugador del cuerpo de la petición
@@ -120,7 +120,7 @@ def add_player():
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400
     
-@app.route('/update_player/<int:id_player>', methods=['PUT'])
+@app.route('/players/<int:id_player>', methods=['PUT'])
 def update_player(id_player):
     try:
         # Obtiene los datos del jugador del cuerpo de la petición
@@ -187,7 +187,7 @@ def Teams():
 
     return jsonify(teams_json)
 
-@app.route('/delete_team/<int:id_team>', methods=['DELETE'])
+@app.route('/teams/<int:id_team>', methods=['DELETE'])
 def delete_team(id_team):
     try:
         conn = get_db_connection()
@@ -211,7 +211,7 @@ def delete_team(id_team):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404
     
-@app.route('/add_team/', methods=['POST'])
+@app.route('/teams/', methods=['POST'])
 def add_team():
     try:
         # Obtiene los datos del equipo del cuerpo de la petición
@@ -245,7 +245,7 @@ def add_team():
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400
     
-@app.route('/update_team/<int:id_team>', methods=['PUT'])
+@app.route('/teams/<int:id_team>', methods=['PUT'])
 def update_team(id_team):
     try:
         # Obtiene los datos del equipo del cuerpo de la petición
@@ -310,7 +310,7 @@ def Stadiums():
 
     return jsonify(stadiums_json)
 
-@app.route('/delete_stadium/<int:id_stadium>', methods=['DELETE'])
+@app.route('/stadiums/<int:id_stadium>', methods=['DELETE'])
 def delete_stadium(id_stadium):
     try:
         conn = get_db_connection()
@@ -334,7 +334,7 @@ def delete_stadium(id_stadium):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404  # Puedes cambiar el código de estado según sea necesario
 
-@app.route('/add_stadium/', methods=['POST'])
+@app.route('/stadiums/', methods=['POST'])
 def add_stadium():
     try:
         # Obtiene los datos del estadio del cuerpo de la petición
@@ -369,7 +369,7 @@ def add_stadium():
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400
 
-@app.route('/update_stadium/<int:id_stadium>', methods=['PUT'])
+@app.route('/stadiums/<int:id_stadium>', methods=['PUT'])
 def update_stadium(id_stadium):
     try:
         # Obtiene los datos del estadio del cuerpo de la petición
@@ -413,7 +413,7 @@ def update_stadium(id_stadium):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400 
 
-@app.route('/Special_Moves/')
+@app.route('/special_moves/')
 def Special_Moves():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -435,7 +435,7 @@ def Special_Moves():
     
     return jsonify(special_moves_json)
 
-@app.route('/delete_special_move/<int:id_special_move>', methods=['DELETE'])
+@app.route('/special_moves/<int:id_special_move>', methods=['DELETE'])
 def delete_special_move(id_special_move):
     try:
         conn = get_db_connection()
@@ -459,7 +459,7 @@ def delete_special_move(id_special_move):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404
 
-@app.route('/add_special_move/', methods=['POST'])
+@app.route('/special_moves/', methods=['POST'])
 def add_special_move():
     try:
         # Obtiene los datos de la supertécnica del cuerpo de la petición
@@ -494,7 +494,7 @@ def add_special_move():
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400
 
-@app.route('/update_special_move/<int:id_special_move>', methods=['PUT'])
+@app.route('/special_moves/<int:id_special_move>', methods=['PUT'])
 def update_special_move(id_special_move):
     try:
         # Obtiene los datos de la supertécnica del cuerpo de la petición
@@ -538,7 +538,7 @@ def update_special_move(id_special_move):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400 
 
-@app.route('/Matches/')
+@app.route('/matches/')
 def Matches():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -569,7 +569,7 @@ def Matches():
     
     return jsonify(matches_json)
 
-@app.route('/delete_match/<int:id_match>', methods=['DELETE'])
+@app.route('/matches/<int:id_match>', methods=['DELETE'])
 def delete_match(id_match):
     try:
         conn = get_db_connection()
@@ -593,7 +593,7 @@ def delete_match(id_match):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404
 
-@app.route('/add_match/', methods=['POST'])
+@app.route('/matches/', methods=['POST'])
 def add_match():
     try:
         # Obtiene los datos del partido del cuerpo de la petición
@@ -631,7 +631,7 @@ def add_match():
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400
 
-@app.route('/update_match/<int:id_match>', methods=['PUT'])
+@app.route('/matches/<int:id_match>', methods=['PUT'])
 def update_match(id_match):
     try:
         # Obtiene los datos del partido del cuerpo de la petición
@@ -675,7 +675,7 @@ def update_match(id_match):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400   
 
-@app.route('/Trainings/')
+@app.route('/trainings/')
 def Trainings():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -701,7 +701,7 @@ def Trainings():
     
     return jsonify(trainings_json)
 
-@app.route('/delete_training/<int:id_training>', methods=['DELETE'])
+@app.route('/trainings/<int:id_training>', methods=['DELETE'])
 def delete_training(id_training):
     try:
         conn = get_db_connection()
@@ -725,7 +725,7 @@ def delete_training(id_training):
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 404
 
-@app.route('/add_training/', methods=['POST'])
+@app.route('/trainings/', methods=['POST'])
 def add_training():
     try:
         # Obtiene los datos del entrenamiento del cuerpo de la petición
@@ -761,7 +761,7 @@ def add_training():
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400
 
-@app.route('/update_training/<int:id_training>', methods=['PUT'])
+@app.route('/trainings/<int:id_training>', methods=['PUT'])
 def update_training(id_training):
     try:
         # Obtiene los datos del entrenamiento del cuerpo de la petición
@@ -804,3 +804,257 @@ def update_training(id_training):
     except Exception as e:
         # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
         return jsonify({'error': str(e)}), 400       
+
+@app.route('/special_move_for_player/')
+def Special_Move_For_Player():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT J.id_jugador, J.nombre, J.apellidos, ST.id_supertecnica, ST.nombre, ST.elemento, ST.tipo '
+                'FROM JUGADOR J '
+                'JOIN SUPERTECNICA_JUGADOR STJ ON J.id_jugador = STJ.id_jugador '
+                'JOIN SUPERTECNICA ST ON STJ.id_supertecnica = ST.id_supertecnica ')
+    special_move_for_player = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    special_move_for_player_json = []
+    for special_move in special_move_for_player:
+        special_move_dict = {
+            'ID Jugador': special_move[0],
+            'Nombre': special_move[1],
+            'Apellidos': special_move[2],
+            'ID Supertecnica': special_move[3],
+            'Nombre de Supertecnica': special_move[4],
+            'Elemento de Supertecnica': special_move[5],
+            'Tipo de Supertecnica': special_move[6]
+        }
+        special_move_for_player_json.append(special_move_dict)
+    
+    return jsonify(special_move_for_player_json)
+
+@app.route('/special_move_for_player/<int:id_jugador>/<int:id_supertecnica>', methods=['DELETE'])
+def delete_special_move_for_player(id_jugador, id_supertecnica):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Intenta eliminar la supertecnica con el ID proporcionado
+        cur.execute('DELETE FROM supertecnica_jugador WHERE id_jugador = %s AND id_supertecnica = %s;', (id_jugador, id_supertecnica))
+        conn.commit()
+
+        # Verifica si se eliminó alguna supertecnica
+        if cur.rowcount == 0:
+            # No se encontró ninguna supertecnica con el ID proporcionado
+            raise Exception(f'No se encontro una supertecnica con el ID {id_supertecnica} para el jugador con el ID {id_jugador}')
+
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Special Move for Player deleted successfully'})
+
+    except Exception as e:
+        # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
+        return jsonify({'error': str(e)}), 404
+
+    
+@app.route('/special_move_for_player/', methods=['POST'])
+def add_special_move_for_player():
+    try:
+        # Obtiene los datos de la supertécnica del cuerpo de la petición
+        special_move_for_player_data = request.get_json()
+
+        # Valida que los datos de la supertécnica no estén vacíos
+        if not special_move_for_player_data:
+            raise Exception('No se proporcionaron datos para la supertécnica del jugador')
+        
+        for field in special_move_for_player_data:
+            if not special_move_for_player_data.get(field):
+                raise Exception(f'El campo {field} no puede estar vacío')
+
+        # Obtiene una conexión a la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Inserta el equipo en la base de datos
+        cur.execute('INSERT INTO SUPERTECNICA_JUGADOR(id_jugador, id_supertecnica)'
+                    'VALUES (%s, %s);', 
+                    (special_move_for_player_data.get('id_jugador'), 
+                     special_move_for_player_data.get('id_supertecnica')))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Special Move for Player added successfully'})
+
+    except Exception as e:
+        # Captura cualquier excepción y devuelve un objeto JSON con el mensaje de error
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/special_move_for_player/<int:id_jugador>/<int:id_supertecnica>', methods=['PUT'])
+def update_special_move_for_player(id_jugador, id_supertecnica):
+    try:
+        # Obtiene los datos de la supertécnica del cuerpo de la petición
+        special_move_for_player_data = request.get_json()
+
+        # Valida que los datos de la supertécnica no estén vacíos
+        if not special_move_for_player_data:
+            raise Exception('No se proporcionaron datos para la supertécnica del jugador')
+        
+        # Obtiene una conexión a la base de datos
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Construye dinámicamente la consulta SQL
+        fields_to_update = []
+        values_to_update = []
+
+        for field in ["id_jugador", "id_supertecnica"]:
+            if field in special_move_for_player_data and special_move_for_player_data[field] is not None:
+                fields_to_update.append(f'{field} = %s')
+                values_to_update.append(special_move_for_player_data[field])
+
+        # Valida que al menos un campo se vaya a actualizar
+        if not fields_to_update:
+            raise Exception('Ningún campo proporcionado para actualizar')
+
+        # Agrega el ID del supertecnica al final de los valores a actualizar
+        values_to_update.append(id_jugador)
+        values_to_update.append(id_supertecnica)
+
+        # Construye y ejecuta la consulta SQL
+        query = f'UPDATE SUPERTECNICA_JUGADOR SET {", ".join(fields_to_update)} WHERE id_jugador = %s AND id_supertecnica = %s;'
+        cur.execute(query, tuple(values_to_update))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Special Move for Player updated successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/keeper/<int:id_keeper>', methods=['PUT'])
+def update_keeper(id_keeper):
+    try:
+        keeper_data = request.get_json()
+
+        if not keeper_data:
+            raise Exception('No se proporcionaron datos para el portero')
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        check_query = 'SELECT COUNT(*) FROM PORTERO WHERE id_jugador = %s;'
+        cur.execute(check_query, (id_keeper,))
+        result = cur.fetchone()
+
+        if result[0] == 0:
+            raise Exception(f'No se encontró el portero con ID {id_keeper}')
+
+
+        query = 'UPDATE PORTERO SET paradas = %s WHERE id_jugador = %s;'
+        cur.execute(query, (keeper_data.get('paradas'), id_keeper))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Keeper updated successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/defense/<int:id_defense>', methods=['PUT'])
+def update_defense(id_defense):
+    try:
+        defense_data = request.get_json()
+
+        if not defense_data:
+            raise Exception('No se proporcionaron datos para el defensa')
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        check_query = 'SELECT COUNT(*) FROM DEFENSA WHERE id_jugador = %s;'
+        cur.execute(check_query, (id_defense,))
+
+        result = cur.fetchone()
+
+        if result[0] == 0:
+            raise Exception(f'No se encontró el defensa con ID {id_defense}')
+
+        query = 'UPDATE DEFENSA SET balones_robados = %s WHERE id_jugador = %s;'
+        cur.execute(query, (defense_data.get('balones_robados'), id_defense))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Defense updated successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/midfielder/<int:id_midfielder>', methods=['PUT'])
+def update_midfielder(id_midfielder):
+    try:
+        midfielder_data = request.get_json()
+
+        if not midfielder_data:
+            raise Exception('No se proporcionaron datos para el mediocampista')
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        check_query = 'SELECT COUNT(*) FROM centrocampista WHERE id_jugador = %s;'
+        cur.execute(check_query, (id_midfielder,))
+        result = cur.fetchone()
+
+        if result[0] == 0:
+            raise Exception(f'No se encontró el centrocampista con ID {id_midfielder}')
+
+        query = 'UPDATE centrocampista SET regates_realizados = %s WHERE id_jugador = %s;'
+        cur.execute(query, (midfielder_data.get('regates_realizados'), id_midfielder))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Midfielder updated successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/forward/<int:id_forward>', methods=['PUT'])
+def update_forward(id_forward):
+    try:
+        forward_data = request.get_json()
+
+        if not forward_data:
+            raise Exception('No se proporcionaron datos para el delantero')
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        check_query = 'SELECT COUNT(*) FROM DELANTERO WHERE id_jugador = %s;'
+        cur.execute(check_query, (id_forward,))
+        result = cur.fetchone()
+
+        if result[0] == 0:
+            raise Exception(f'No se encontró el delantero con ID {id_forward}')
+
+        query = 'UPDATE DELANTERO SET disparos_a_puerta = %s WHERE id_jugador = %s;'
+        cur.execute(query, (forward_data.get('disparos_a_puerta'), id_forward))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': 'Forward updated successfully'})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
