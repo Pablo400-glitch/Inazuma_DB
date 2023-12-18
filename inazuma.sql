@@ -24,7 +24,7 @@ CREATE TABLE ESTADIO(
   PRIMARY KEY(id_estadio)
 );
 
-create table PARTIDO(
+CREATE TABLE PARTIDO(
   id_partido SERIAL NOT NULL,
   id_equipo_local INTEGER not NULL,
   id_equipo_visitante INTEGER NOT NULL,
