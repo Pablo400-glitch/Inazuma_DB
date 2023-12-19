@@ -219,7 +219,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER actualizar_goles AFTER UPDATE ON PARTIDO FOR EACH ROW EXECUTE PROCEDURE actualizar_goles();
 
--- Disparador que actualiza los goles a favor y en contra a los equipos al borrar un registro en la tabla PARTIDO
+-- Disparador que resta los goles a favor y en contra a los equipos al borrar un registro en la tabla PARTIDO
 CREATE OR REPLACE FUNCTION restar_goles() RETURNS TRIGGER AS $$
 BEGIN
   UPDATE EQUIPO SET goles_a_favor = goles_a_favor - OLD.goles_local WHERE id_equipo = OLD.id_equipo_local;
@@ -236,33 +236,40 @@ CREATE TRIGGER restar_goles BEFORE DELETE ON PARTIDO FOR EACH ROW EXECUTE PROCED
 -- Disparador que sume usuarios de supertécnicas al añadir a la tabla jugador-supertécnicas
 CREATE OR REPLACE FUNCTION jugadores_con_supertecnica() RETURNS TRIGGER AS $$
 BEGIN
-  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica + 1 WHERE id_supertecnica = NEW.id_supertecnica;
+  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica + 1 
+  WHERE id_supertecnica = NEW.id_supertecnica;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER jugadores_con_supertecnica AFTER INSERT ON SUPERTECNICA_JUGADOR FOR EACH ROW EXECUTE PROCEDURE jugadores_con_supertecnica();
+CREATE TRIGGER jugadores_con_supertecnica AFTER INSERT ON SUPERTECNICA_JUGADOR 
+FOR EACH ROW EXECUTE PROCEDURE jugadores_con_supertecnica();
 
 -- Disparador que actualiza los usuarios de supertécnicas
 CREATE OR REPLACE FUNCTION actualizar_jugadores_con_supertecnica() RETURNS TRIGGER AS $$
 BEGIN
-  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica - 1 WHERE id_supertecnica = OLD.id_supertecnica;
-  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica + 1 WHERE id_supertecnica = NEW.id_supertecnica;
+  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica - 1 
+  WHERE id_supertecnica = OLD.id_supertecnica;
+  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica + 1 
+  WHERE id_supertecnica = NEW.id_supertecnica;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER actualizar_jugadores_con_supertecnica AFTER UPDATE ON SUPERTECNICA_JUGADOR FOR EACH ROW EXECUTE PROCEDURE actualizar_jugadores_con_supertecnica();
+CREATE TRIGGER actualizar_jugadores_con_supertecnica AFTER UPDATE ON SUPERTECNICA_JUGADOR 
+FOR EACH ROW EXECUTE PROCEDURE actualizar_jugadores_con_supertecnica();
 
 -- Disparador que actualiza los usuarios de supertécnicas al borrar un registro en la tabla PARTIDO
 CREATE OR REPLACE FUNCTION restar_jugadores_con_supertecnica() RETURNS TRIGGER AS $$
 BEGIN
-  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica - 1 WHERE id_supertecnica = OLD.id_supertecnica;
+  UPDATE SUPERTECNICA SET cantidad_jugadores_con_supertecnica = cantidad_jugadores_con_supertecnica - 1 
+  WHERE id_supertecnica = OLD.id_supertecnica;
   RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER restar_jugadores_con_supertecnica BEFORE DELETE ON SUPERTECNICA_JUGADOR FOR EACH ROW EXECUTE PROCEDURE restar_jugadores_con_supertecnica();
+CREATE TRIGGER restar_jugadores_con_supertecnica BEFORE DELETE ON SUPERTECNICA_JUGADOR 
+FOR EACH ROW EXECUTE PROCEDURE restar_jugadores_con_supertecnica();
 
 -- Disparador que valida la hora de inicio en un partido de un equipo
 CREATE OR REPLACE FUNCTION validar_horario_partido()
@@ -286,7 +293,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER validar_horario_partido_trigger BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_horario_partido();
+CREATE TRIGGER validar_horario_partido_insert BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_horario_partido();
+CREATE TRIGGER validar_horario_partido_update BEFORE UPDATE ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_horario_partido();
 
 -- Disparador que valida la hora de inicio en un entrenamiento de un equipo
 CREATE OR REPLACE FUNCTION validar_horario_entrenamiento()
@@ -310,7 +318,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER validar_horario_entrenamiento_trigger BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_horario_entrenamiento();
+CREATE TRIGGER validar_horario_entrenamiento_insert BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_horario_entrenamiento();
+CREATE TRIGGER validar_horario_entrenamiento_update BEFORE UPDATE ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_horario_entrenamiento();
 
 -- Disparador que valida la hora de inicio entre partidos del mismo equipo
 CREATE OR REPLACE FUNCTION validar_partidos_mismo_equipo()
@@ -344,7 +353,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER validar_partidos_mismo_equipo_trigger BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_partidos_mismo_equipo();
+CREATE TRIGGER validar_partidos_mismo_equipo_insert BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_partidos_mismo_equipo();
+CREATE TRIGGER validar_partidos_mismo_equipo_update BEFORE UPDATE ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_partidos_mismo_equipo();
 
 -- Disparador que valida la hora de inicio en un entrenamiento
 CREATE OR REPLACE FUNCTION validar_entrenamientos_mismo_equipo()
@@ -363,7 +373,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER validar_entrenamientos_mismo_equipo_trigger BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
+CREATE TRIGGER validar_entrenamientos_mismo_equipo_insert BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
+CREATE TRIGGER validar_entrenamientos_mismo_equipo_update BEFORE UPDATE ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
 
 -- Disparador que añade jugadores a las respectivas tablas de las posiciones
 CREATE OR REPLACE FUNCTION insertar_jugador()
@@ -382,7 +393,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER despues_de_insertar_jugador AFTER INSERT ON JUGADOR FOR EACH ROW EXECUTE FUNCTION insertar_jugador();
+CREATE TRIGGER insertar_jugador AFTER INSERT ON JUGADOR FOR EACH ROW EXECUTE FUNCTION insertar_jugador();
 
 -- Disparador que elimina jugadores a las respectivas tablas de las posiciones
 CREATE OR REPLACE FUNCTION eliminar_jugador()
@@ -401,7 +412,36 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER despues_de_eliminar_jugador AFTER DELETE ON JUGADOR FOR EACH ROW EXECUTE FUNCTION eliminar_jugador();
+CREATE TRIGGER eliminar_jugador AFTER DELETE ON JUGADOR FOR EACH ROW EXECUTE FUNCTION eliminar_jugador();
+
+-- Disparador que actualiza jugadores a las respectivas tablas de las posiciones
+CREATE OR REPLACE FUNCTION actualizar_jugador()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF OLD.posicion = 'Portero' THEN
+    DELETE FROM PORTERO WHERE id_jugador = OLD.id_jugador;
+  ELSIF OLD.posicion = 'Defensa' THEN
+    DELETE FROM DEFENSA WHERE id_jugador = OLD.id_jugador;
+  ELSIF OLD.posicion = 'Centrocampista' THEN
+    DELETE FROM CENTROCAMPISTA WHERE id_jugador = OLD.id_jugador;
+  ELSIF OLD.posicion = 'Delantero' THEN
+    DELETE FROM DELANTERO WHERE id_jugador = OLD.id_jugador;
+  END IF;
+
+  IF NEW.posicion = 'Portero' THEN
+    INSERT INTO PORTERO(id_jugador, paradas) VALUES (NEW.id_jugador, 0);
+  ELSIF NEW.posicion = 'Defensa' THEN
+    INSERT INTO DEFENSA(id_jugador, balones_robados) VALUES (NEW.id_jugador, 0);
+  ELSIF NEW.posicion = 'Centrocampista' THEN
+    INSERT INTO CENTROCAMPISTA(id_jugador, regates_realizados) VALUES (NEW.id_jugador, 0);
+  ELSIF NEW.posicion = 'Delantero' THEN
+    INSERT INTO DELANTERO(id_jugador, disparos_a_puerta) VALUES (NEW.id_jugador, 0);
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER actualizar_jugador AFTER DELETE ON JUGADOR FOR EACH ROW EXECUTE FUNCTION actualizar_jugador();
 
 
 -- Equipos
