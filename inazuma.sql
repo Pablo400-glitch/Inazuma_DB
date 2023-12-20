@@ -327,23 +327,23 @@ RETURNS TRIGGER AS $$
 BEGIN
   IF EXISTS (
     SELECT 1
-    FROM PARTIDO
-    WHERE id_equipo_local = NEW.id_equipo_local
+    FROM PARTIDO 
+    WHERE id_equipo_local = NEW.id_equipo_local AND id_partido != NEW.id_partido
       AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) OR EXISTS (
     SELECT 1
     FROM PARTIDO
-    WHERE id_equipo_local = NEW.id_equipo_visitante
+    WHERE id_equipo_local = NEW.id_equipo_visitante AND id_partido != NEW.id_partido
       AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) or EXISTS (
     SELECT 1
     FROM PARTIDO
-    WHERE id_equipo_visitante = NEW.id_equipo_local
+    WHERE id_equipo_visitante = NEW.id_equipo_local AND id_partido != NEW.id_partido
       AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) OR EXISTS (
     SELECT 1
     FROM PARTIDO
-    WHERE id_equipo_visitante = NEW.id_equipo_visitante
+    WHERE id_equipo_visitante = NEW.id_equipo_visitante AND id_partido != NEW.id_partido
       AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) THEN
     RAISE EXCEPTION 'No se puede programar un partido dentro de las 2 horas anteriores o posteriores a otro partido del mismo equipo.';
@@ -363,7 +363,7 @@ BEGIN
   IF EXISTS (
     SELECT 1
     FROM ENTRENAMIENTO
-    WHERE NEW.id_equipo = id_equipo
+    WHERE NEW.id_equipo = id_equipo AND id_training != NEW.id_training
       AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
   ) THEN
     RAISE EXCEPTION 'No se puede programar un entrenamiento dentro de las 2 horas anteriores o posteriores a un entrenamiento del mismo equipo.';
@@ -375,6 +375,46 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER validar_entrenamientos_mismo_equipo_insert BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
 CREATE TRIGGER validar_entrenamientos_mismo_equipo_update BEFORE UPDATE ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_entrenamientos_mismo_equipo();
+
+-- Disparador que valida el lugar en un partido
+CREATE OR REPLACE FUNCTION validar_lugar_partido()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM PARTIDO
+    WHERE id_estadio = NEW.id_estadio
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar el partido, el estadio está ocupado las 2 horas anteriores o posteriores.';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validar_lugar_partido_insert BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_lugar_partido();
+CREATE TRIGGER validar_lugar_partido_update BEFORE UPDATE ON PARTIDO FOR EACH ROW EXECUTE FUNCTION validar_lugar_partido();
+
+-- Disparador que valida el lugar en un entrenamiento de un equipo
+CREATE OR REPLACE FUNCTION validar_lugar_entrenamiento()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM ENTRENAMIENTO
+    WHERE NEW.lugar = lugar
+      AND ((fecha >= NEW.fecha AND fecha <= NEW.fecha + INTERVAL '2 hours') OR (fecha <= NEW.fecha AND fecha >= NEW.fecha - INTERVAL '2 hours'))
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar un entrenamiento, el lugar está ocupado las 2 horas anteriores o posteriores.';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validar_lugar_entrenamiento_insert BEFORE INSERT ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_lugar_entrenamiento();
+CREATE TRIGGER validar_lugar_entrenamiento_update BEFORE UPDATE ON ENTRENAMIENTO FOR EACH ROW EXECUTE FUNCTION validar_lugar_entrenamiento();
 
 -- Disparador que añade jugadores a las respectivas tablas de las posiciones
 CREATE OR REPLACE FUNCTION insertar_jugador()
@@ -452,7 +492,7 @@ BEGIN
     FROM ENTRENAMIENTO
     WHERE NEW.id_equipo_local = id_equipo AND (fecha < NEW.fecha)
   )  THEN
-    RAISE EXCEPTION 'No se puede programar un partido mientras el equipo local no haya entrenado entrenamientos.';
+    RAISE EXCEPTION 'No se puede programar un partido mientras el equipo local no haya hecho entrenamientos.';
   END IF;
 
   IF NOT EXISTS (
@@ -460,12 +500,13 @@ BEGIN
     FROM ENTRENAMIENTO
     WHERE NEW.id_equipo_VISITANTE = id_equipo AND (fecha < NEW.fecha)
   ) THEN
-    RAISE EXCEPTION 'No se puede programar un partido mientras el equipo visitante no haya entrenado entrenamientos.';
+    RAISE EXCEPTION 'No se puede programar un partido mientras el equipo visitante no haya hecho entrenamientos.';
   END IF;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER inclusividad_equipo BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION inclusividad_equipo();
+
 
 
 
