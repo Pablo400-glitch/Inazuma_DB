@@ -1085,7 +1085,7 @@ def update_midfielder(id_midfielder):
         if not midfielder_data:
             raise Exception('No se proporcionaron datos para el mediocampista')
         
-        conn = get_db_connectiaon()
+        conn = get_db_connection()
         cur = conn.cursor()
 
         check_query = 'SELECT COUNT(*) FROM centrocampista WHERE id_jugador = %s;'
