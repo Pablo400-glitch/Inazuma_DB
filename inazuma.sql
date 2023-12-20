@@ -443,6 +443,31 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER actualizar_jugador AFTER DELETE ON JUGADOR FOR EACH ROW EXECUTE FUNCTION actualizar_jugador();
 
+-- Disparador que comprueba la inclusividad (es necesario un entrenamiento para jugar un partido)
+CREATE OR REPLACE FUNCTION inclusividad_equipo()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM ENTRENAMIENTO
+    WHERE NEW.id_equipo_local = id_equipo AND (fecha < NEW.fecha)
+  )  THEN
+    RAISE EXCEPTION 'No se puede programar un partido mientras el equipo local no haya entrenado entrenamientos.';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM ENTRENAMIENTO
+    WHERE NEW.id_equipo_VISITANTE = id_equipo AND (fecha < NEW.fecha)
+  ) THEN
+    RAISE EXCEPTION 'No se puede programar un partido mientras el equipo visitante no haya entrenado entrenamientos.';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER inclusividad_equipo BEFORE INSERT ON PARTIDO FOR EACH ROW EXECUTE FUNCTION inclusividad_equipo();
+
+
 
 -- Equipos
 INSERT INTO EQUIPO (nombre, pais, victorias, goles_a_favor, goles_en_contra)
@@ -985,6 +1010,21 @@ VALUES
     ('Royal Academy', 'Sin cesped', 'Exterior'),
     ('Estadio Zeus', 'Natural', 'Cubierto');
 
+INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
+VALUES
+('2008-10-05 17:00:00', 1, 'Instituto Raimon', 'Vuelta al campo'),
+('2008-10-06 17:00:00', 1, 'Instituto Raimon', 'Tiro a puerta'),
+('2008-10-07 17:00:00', 1, 'Ribera del río', 'Control de balon'),
+('2008-10-08 17:00:00', 2, 'Instituto Royal', 'Control de balon'),
+('2008-10-08 17:00:00', 3, 'Instituto Occult', 'Tiro a puerta'),
+('2008-10-08 17:00:00', 4, 'Instituto Wild', 'Control de balon'),
+('2008-10-09 17:00:00', 5, 'Instituto Brain', 'Vuelta al campo'),
+('2008-10-12 11:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
+('2008-10-12 11:00:00', 7, 'Ribera del río', 'Tiro a puerta');
+('2008-10-12 11:00:00', 8, 'Ribera del río', 'Tiro a puerta');
+('2008-10-12 11:00:00', 9, 'Instituto Raimon', 'Tiro a puerta');
+('2008-10-12 11:00:00', 10, 'Instituto Zeus', 'Tiro a puerta');
+('2008-10-12 11:00:00', 11, 'Ribera del río', 'Tiro a puerta');
 
 INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
 VALUES
@@ -1000,13 +1040,3 @@ VALUES
 (1, 9, 1, 3, 2, '2009-02-15 10:00:00'),
 (1, 10, 1, 4, 3, '2009-03-08 10:00:00');
 
-INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
-VALUES
-('2008-10-05 17:00:00', 1, 'Instituto Raimon', 'Vuelta al campo'),
-('2008-10-06 17:00:00', 1, 'Instituto Raimon', 'Tiro a puerta'),
-('2008-10-07 17:00:00', 1, 'Ribera del río', 'Control de balon'),
-('2008-10-08 17:00:00', 2, 'Instituto Royal', 'Control de balon'),
-('2008-10-08 17:00:00', 3, 'Instituto Occult', 'Tiro a puerta'),
-('2008-10-08 17:00:00', 4, 'Instituto Wild', 'Control de balon'),
-('2008-10-09 17:00:00', 5, 'Instituto Brain', 'Vuelta al campo'),
-('2008-10-12 11:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
