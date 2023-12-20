@@ -51,3 +51,28 @@ VALUES (996, -1); --Valor negativo
 
 
 DELETE FROM JUGADOR WHERE id_jugador = 999 OR id_jugador = 998 OR id_jugador = 997 OR id_jugador = 996;
+
+
+
+-- Comprobación de excepciones de triggers 
+
+INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo) --Entrenamiento cerca de partido
+VALUES ('2008-10-12 09:00:00', 1, 'Instituto Raimon', 'Vuelta al campo');
+
+INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)  --Entrenamiento cerca de entrenamiento
+VALUES ('2008-10-05 16:00:00', 1, 'Instituto Raimon', 'Vuelta al campo');
+
+INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
+VALUES (1, 2, 3, 1, 20, '2008-10-12 11:00:00'); --partido cerca de partido
+
+INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
+VALUES (1, 2, 3, 1, 20, '2008-10-05 18:00:00'); --partido cerca de entrenamiento
+
+INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo)
+VALUES ('2008-10-05 17:00:00', 2, 'Instituto Raimon', 'Vuelta al campo'); --Entrenamiento mismo lugar
+
+INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
+VALUES (3, 4, 3, 1, 1, '2008-10-12 10:00:00'); --partido mismo lugar
+
+INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
+VALUES (3, 4, 2, 12, 13, '2008-10-12 07:00:00'); --necesidad de entrenamiento para partido
