@@ -935,37 +935,77 @@ def update_special_move_for_player(id_jugador, id_supertecnica):
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
-@app.route('/keeper/<int:id_keeper>', methods=['PUT'])
-def update_keeper(id_keeper):
+@app.route('/goalkeeper/<int:id_goalkeeper>', methods=['PUT'])
+def update_goalkeeper(id_goalkeeper):
     try:
-        keeper_data = request.get_json()
+        goalkeeper_data = request.get_json()
 
-        if not keeper_data:
+        if not goalkeeper_data:
             raise Exception('No se proporcionaron datos para el portero')
         
         conn = get_db_connection()
         cur = conn.cursor()
 
         check_query = 'SELECT COUNT(*) FROM PORTERO WHERE id_jugador = %s;'
-        cur.execute(check_query, (id_keeper,))
+        cur.execute(check_query, (id_goalkeeper,))
         result = cur.fetchone()
 
         if result[0] == 0:
-            raise Exception(f'No se encontró el portero con ID {id_keeper}')
+            raise Exception(f'No se encontró el portero con ID {id_goalkeeper}')
 
 
         query = 'UPDATE PORTERO SET paradas = %s WHERE id_jugador = %s;'
-        cur.execute(query, (keeper_data.get('paradas'), id_keeper))
+        cur.execute(query, (goalkeeper_data.get('paradas'), id_goalkeeper))
         
         conn.commit()
         cur.close()
         conn.close()
 
-        return jsonify({'message': 'Keeper updated successfully'})
+        return jsonify({'message': 'goalKeeper updated successfully'})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-    
+
+@app.route('/goalkeeper/', methods=['GET'])
+def get_goalkeeper():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT J.*, E.nombre, p.paradas AS nombre_equipo '
+                    'FROM (JUGADOR J JOIN EQUIPO E ON J.id_equipo = E.id_equipo) INNER JOIN portero P ON J.id_jugador = P.id_jugador')
+        players = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        players_json = []
+        for player in players:
+            player_dict = {
+                'ID': player[0],
+                'Nombre': player[1],
+                'Apellidos': player[2],
+                'Edad': player[3],
+                'Posicion': player[4],
+                'Nacionalidad': player[5],
+                'Nombre_equipo': player[14],
+                'Atributos': {
+                    'Fuerza': player[6],
+                    'Velocidad': player[7],
+                    'Resistencia': player[8],
+                    'Tecnica': player[9],
+                    'Porteria': player[10],
+                    'Regate': player[11],
+                    'Tiro': player[12],
+                    'Aguante': player[13]
+                },
+                'Paradas': player[15]
+            }
+            players_json.append(player_dict)
+
+        return jsonify(players_json)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+        
 @app.route('/defense/<int:id_defense>', methods=['PUT'])
 def update_defense(id_defense):
     try:
@@ -997,6 +1037,46 @@ def update_defense(id_defense):
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
+@app.route('/defense/', methods=['GET'])
+def get_defense():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT J.*, E.nombre, D.balones_robados AS nombre_equipo '
+                    'FROM (JUGADOR J JOIN EQUIPO E ON J.id_equipo = E.id_equipo) INNER JOIN defensa D ON J.id_jugador = D.id_jugador')
+        players = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        players_json = []
+        for player in players:
+            player_dict = {
+                'ID': player[0],
+                'Nombre': player[1],
+                'Apellidos': player[2],
+                'Edad': player[3],
+                'Posicion': player[4],
+                'Nacionalidad': player[5],
+                'Nombre_equipo': player[14],
+                'Atributos': {
+                    'Fuerza': player[6],
+                    'Velocidad': player[7],
+                    'Resistencia': player[8],
+                    'Tecnica': player[9],
+                    'Porteria': player[10],
+                    'Regate': player[11],
+                    'Tiro': player[12],
+                    'Aguante': player[13]
+                },
+                'Balones Robados': player[15]
+            }
+            players_json.append(player_dict)
+
+        return jsonify(players_json)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 @app.route('/midfielder/<int:id_midfielder>', methods=['PUT'])
 def update_midfielder(id_midfielder):
     try:
@@ -1005,7 +1085,7 @@ def update_midfielder(id_midfielder):
         if not midfielder_data:
             raise Exception('No se proporcionaron datos para el mediocampista')
         
-        conn = get_db_connection()
+        conn = get_db_connectiaon()
         cur = conn.cursor()
 
         check_query = 'SELECT COUNT(*) FROM centrocampista WHERE id_jugador = %s;'
@@ -1026,8 +1106,49 @@ def update_midfielder(id_midfielder):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-    
-@app.route('/forward/<int:id_forward>', methods=['PUT'])
+  
+@app.route('/midfielder/', methods=['GET'])
+def get_midfielder():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT J.*, E.nombre, M.regates_realizados AS nombre_equipo '
+                    'FROM (JUGADOR J JOIN EQUIPO E ON J.id_equipo = E.id_equipo) INNER JOIN centrocampista M ON J.id_jugador = M.id_jugador')
+        players = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        players_json = []
+        for player in players:
+            player_dict = {
+                'ID': player[0],
+                'Nombre': player[1],
+                'Apellidos': player[2],
+                'Edad': player[3],
+                'Posicion': player[4],
+                'Nacionalidad': player[5],
+                'Nombre_equipo': player[14],
+                'Atributos': {
+                    'Fuerza': player[6],
+                    'Velocidad': player[7],
+                    'Resistencia': player[8],
+                    'Tecnica': player[9],
+                    'Porteria': player[10],
+                    'Regate': player[11],
+                    'Tiro': player[12],
+                    'Aguante': player[13]
+                },
+                'Regates Realizados': player[15]
+            }
+            players_json.append(player_dict)
+
+        return jsonify(players_json)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+@app.route('/forward:id_forward>', methods=['PUT'])
 def update_forward(id_forward):
     try:
         forward_data = request.get_json()
@@ -1057,4 +1178,43 @@ def update_forward(id_forward):
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+@app.route('/forward/', methods=['GET'])
+def get_forward():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT J.*, E.nombre, F.disparos_a_puerta AS nombre_equipo '
+                    'FROM (JUGADOR J JOIN EQUIPO E ON J.id_equipo = E.id_equipo) INNER JOIN delantero F ON J.id_jugador = F.id_jugador')
+        players = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        players_json = []
+        for player in players:
+            player_dict = {
+                'ID': player[0],
+                'Nombre': player[1],
+                'Apellidos': player[2],
+                'Edad': player[3],
+                'Posicion': player[4],
+                'Nacionalidad': player[5],
+                'Nombre_equipo': player[14],
+                'Atributos': {
+                    'Fuerza': player[6],
+                    'Velocidad': player[7],
+                    'Resistencia': player[8],
+                    'Tecnica': player[9],
+                    'Porteria': player[10],
+                    'Regate': player[11],
+                    'Tiro': player[12],
+                    'Aguante': player[13]
+                },
+                'Disparos a Puerta': player[15]
+            }
+            players_json.append(player_dict)
+
+        return jsonify(players_json)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
