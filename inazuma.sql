@@ -1,13 +1,3 @@
--- Elimina la base de datos si existe
-DROP DATABASE IF EXISTS prueba_db;
-
--- Crea una nueva base de datos
-CREATE DATABASE prueba_db;
-
--- Conéctate a la nueva base de datos
-USE prueba_db;
-
-
 CREATE TYPE TIPO_ESTADIO AS ENUM('Cubierto', 'Exterior');
 CREATE TYPE CESPED AS ENUM('Natural', 'Artificial', 'Sin cesped');
 CREATE TYPE ELEMENTO AS ENUM('Bosque', 'Montaña', 'Aire', 'Fuego');
@@ -502,6 +492,7 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'No se puede programar un partido mientras el equipo visitante no haya hecho entrenamientos.';
   END IF;
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1060,12 +1051,12 @@ VALUES
 ('2008-10-08 17:00:00', 3, 'Instituto Occult', 'Tiro a puerta'),
 ('2008-10-08 17:00:00', 4, 'Instituto Wild', 'Control de balon'),
 ('2008-10-09 17:00:00', 5, 'Instituto Brain', 'Vuelta al campo'),
-('2008-10-12 11:00:00', 6, 'Instituto Otaku', 'Tiro a puerta');
-('2008-10-12 11:00:00', 7, 'Ribera del río', 'Tiro a puerta');
-('2008-10-12 11:00:00', 8, 'Ribera del río', 'Tiro a puerta');
-('2008-10-12 11:00:00', 9, 'Instituto Raimon', 'Tiro a puerta');
-('2008-10-12 11:00:00', 10, 'Instituto Zeus', 'Tiro a puerta');
-('2008-10-12 11:00:00', 11, 'Ribera del río', 'Tiro a puerta');
+('2008-10-12 11:00:00', 6, 'Instituto Otaku', 'Tiro a puerta'),
+('2008-10-12 08:00:00', 7, 'Ribera del río', 'Tiro a puerta'),
+('2008-10-12 19:00:00', 8, 'Ribera del río', 'Tiro a puerta'),
+('2008-10-12 13:00:00', 9, 'Instituto Raimon', 'Tiro a puerta'),
+('2008-10-12 06:00:00', 10, 'Instituto Zeus', 'Tiro a puerta'),
+('2008-10-12 22:00:00', 11, 'Ribera del río', 'Tiro a puerta');
 
 INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
 VALUES

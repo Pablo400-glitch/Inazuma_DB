@@ -1,16 +1,4 @@
 -- Debería fallar
-INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo) 
-VALUES('2008-10-12 11:00:00', 1, 'Instituto Raimon', 'Vuelta al campo'); --Entrenamiento cerca de partido
-
-INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo) 
-VALUES('2008-10-05 16:00:00', 1, 'Instituto Raimon', 'Vuelta al campo'); --Entrenamiento cerca de entrenamiento
-
-INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
-VALUES(12, 1, 2, 3, 1, 20, '2008-10-05 16:00:00'); --Partido cerca de entrenamiento
-
-INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
-VALUES(12, 1, 2, 3, 1, 20, '2008-10-12 11:00:00'); --Partido cerca de partido
-
 INSERT INTO PARTIDO(id_partido, id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
 VALUES(13, 1, 1, 3, 1, 20, '2010-10-10'); --Partido entre mismos equipos
 
@@ -52,8 +40,6 @@ VALUES (996, -1); --Valor negativo
 
 DELETE FROM JUGADOR WHERE id_jugador = 999 OR id_jugador = 998 OR id_jugador = 997 OR id_jugador = 996;
 
-
-
 -- Comprobación de excepciones de triggers 
 
 INSERT INTO ENTRENAMIENTO(fecha, id_equipo, lugar, tipo) --Entrenamiento cerca de partido
@@ -75,4 +61,4 @@ INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_loca
 VALUES (3, 4, 3, 1, 1, '2008-10-12 10:00:00'); --partido mismo lugar
 
 INSERT INTO PARTIDO(id_equipo_local, id_equipo_visitante, id_estadio, goles_local, goles_visitante, fecha)
-VALUES (3, 4, 2, 12, 13, '2008-10-12 07:00:00'); --necesidad de entrenamiento para partido
+VALUES (12, 13, 2, 2, 3, '2007-10-12 07:00:00'); --necesidad de entrenamiento para partido
